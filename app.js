@@ -22,16 +22,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   User.findUserbyID("67d6a499a61ded3cfc4e8e5f")
-    .then(user => { 
-      req.user = user;
-      console.log(req.user , "req.user")
-      console.log("4545" ,req.user , " 4545")
-      next();  // Move next() inside the then() block
-    })
-    .catch(err => {console.log(err)
+    .then(user => {
+      console.log("user her ois     ", user)
+      req.user = new User(user.name, user.email, user.cart, user._id);
       next();
-    });
-  
+    })
+    .catch(err => console.log(err));
 });
 
 app.use('/admin', adminRoutes);
