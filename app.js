@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 const errorController = require('./controllers/error');
 const { mongoConnect } = require('./util/database'); // Correct import
 console.log(mongoConnect, " is mongoConnect")
+
+const User = require('./models/user')
+console.log(User)
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -18,12 +21,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  // User.findById(1)
-  //   .then(user => {
-  //     req.user = user;
-  next();
-  //   })
-  //   .catch(err => console.log(err));
+  User.findUserbyID("67d6a499a61ded3cfc4e8e5f")
+    .then(user => { 
+      req.user = user;
+      console.log(req.user , "req.user")
+      console.log("4545" ,req.user , " 4545")
+      next();  // Move next() inside the then() block
+    })
+    .catch(err => {console.log(err)
+      next();
+    });
+  
 });
 
 app.use('/admin', adminRoutes);
