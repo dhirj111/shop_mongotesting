@@ -23,35 +23,96 @@ class User {
       });
   }
   addToCart(product) {
-    console.log("product at point 1020 is", product);
+    const cartProductIndex = this.cart.items.findIndex(cp => {
+      return cp.productId.toString() === product._id.toString();
+    });
+    let newQuantity = 1;
+    const updatedCartItems = [...this.cart.items];
 
-    // Initialize cart items or use existing ones
-    const cartItems = this.cart && this.cart.items ? [...this.cart.items] : [];
-
-    // Check if product already exists in cart
-    const existingProductIndex = cartItems.findIndex(
-      item => item.productId && item.productId.toString() === product._id.toString()
-    );
-
-    if (existingProductIndex >= 0) {
-      // Increase quantity if product exists
-      cartItems[existingProductIndex].quantity += 1;
+    if (cartProductIndex >= 0) {
+      newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+      updatedCartItems[cartProductIndex].quantity = newQuantity;
     } else {
-      // Add new product if it doesn't exist
-      cartItems.push({
+      updatedCartItems.push({
         productId: new ObjectId(product._id),
-        quantity: 1
+        quantity: newQuantity
       });
     }
-
-    const updatedCart = { items: cartItems };
+    const updatedCart = {
+      items: updatedCartItems
+    };
     const db = getDb();
-
-    return db.collection('user').updateOne(
-      { _id: new ObjectId(this._id) },
-      { $set: { cart: updatedCart } }
-    );
+    return db
+      .collection('user')
+      .updateOne(
+        { _id: new ObjectId(this._id) },
+        { $set: { cart: updatedCart } }
+      );
   }
+
+  // addToCart(product) {
+  //   console.log("product at point 1020 is", product);
+
+  //   // Initialize cart items or use existing ones
+  //   const cartItems = this.cart && this.cart.items ? [...this.cart.items] : [];
+
+  //   // Check if product already exists in cart
+  //   const existingProductIndex = cartItems.findIndex(
+  //     item => item.productId && item.productId.toString() === product._id.toString()
+  //   );
+
+  //   if (existingProductIndex >= 0) {
+  //     // Increase quantity if product exists
+  //     cartItems[existingProductIndex].quantity += 1;
+  //   } else {
+  //     // Add new product if it doesn't exist
+  //     cartItems.push({
+  //       productId: new ObjectId(product._id),
+  //       quantity: 1
+  //     });
+  //   }
+
+  //   const updatedCart = { items: cartItems };
+  //   const db = getDb();
+
+  //   return db.collection('user').updateOne(
+  //     { _id: new ObjectId(this._id) },
+  //     { $set: { cart: updatedCart } }
+  //   );
+  // }
+  deleteItemFromCart(productId) {
+
+    const updatedCartItems = this.cart.items.filter(item => {
+      return item.productId.toString() !== productId.toString()
+    })
+    const db = getDb();
+    return db
+      .collection('user')
+      .updateOne(
+        { _id: new ObjectId(this._id) },
+        { $set: { cart: { items: updatedCartItems } } }
+      )
+  }
+
+  getCart() {
+    const db = getDb();
+    const productIds = this.cart.items.map(i => {
+      return i.productId;
+
+    });
+    return db.collection('products').find({ _id: { $in: productIds } }).toArray()
+      .then(products => {
+        return products.map(p => {
+          return {
+            ...p, quantity: this.cart.items.find(i => {
+              return i.productId.toString() === p._id.toString();
+            }).quantity
+          }
+        })
+      })
+  }
+
+  
   static findUserbyID(userId) {
     const db = getDb();
     return db

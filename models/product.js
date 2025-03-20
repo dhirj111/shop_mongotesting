@@ -4,12 +4,12 @@ const { get } = require('../routes/admin');
 const { getDb } = require('../util/database');
 
 class Product {
-  constructor(title, price, imageUrl, description ,id ,userId) {
+  constructor(title, price, imageUrl, description, id, userId) {
     this.title = title;
     this.price = price;
     this.imageUrl = imageUrl;
     this.description = description;
-    this._id = id ? new mongodb.ObjectId(id):null;
+    this._id = id ? new mongodb.ObjectId(id) : null;
     this.userId = userId;
   }
 
@@ -26,6 +26,7 @@ class Product {
       });
   }
 
+  
   static fetchAll() {
     const db = getDb();
     return db.collection('products')
