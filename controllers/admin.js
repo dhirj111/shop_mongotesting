@@ -70,15 +70,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  // req.user
-  //   .getProducts()
-  //   .then(products => {
-  //     res.render('admin/products', {
-  //       prods: products,
-  //       pageTitle: 'Admin Products',
-  //       path: '/admin/products'
-  //     });
-  //   })
+
   Product.fetchAll()
     .then(products => {
       res.render('admin/products', {
