@@ -8,7 +8,7 @@ const errorController = require('./controllers/error');
 const mongoose = require('mongoose')
 // const User = require('./models/user')
 const app = express();
-
+const User = require('./models/user')
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -17,6 +17,22 @@ const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+//67e28cbc4ba4915986d91b6e
+
+
+app.use((req, res, next) => {
+  User.findById('67e2b2ef54db47d5ede8dc29')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => {
+      console.log(err)
+    });
+
+});
 
 // app.use((req, res, next) => {
 //   User.findUserbyID("67d6a499a61ded3cfc4e8e5f")
@@ -42,11 +58,23 @@ app.use(errorController.get404);
 
 const uri = 'mongodb+srv://bherus2dbuser:offlineok@bheruscluster.re32x.mongodb.net/shop?retryWrites=true';
 
-mongoose.connect(uri)
-  .then(() => {
-    console.log('Connected to MongoDB');
-    app.listen(1000);
+mongoose
+  .connect(uri)
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Max',
+          email: 'max@test.com',
+          cart: {
+            items: []
+          }
+        });
+        user.save();
+      }
+    });
+    app.listen(3000);
   })
   .catch(err => {
-    console.error('Error connecting to MongoDB', err);
+    console.log(err);
   });
