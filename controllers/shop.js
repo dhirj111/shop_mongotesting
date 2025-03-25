@@ -2,7 +2,7 @@ const Product = require('../models/product');
 const User = require('../models/user')
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       res.render('shop/product-list', {
         prods: products,
@@ -17,20 +17,18 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  console.log("reached in indi- product ", prodId)
-  Product.fetchOne(prodId).then(products => {
+  Product.findById(prodId).then(product => {
     res.render('shop/product-detail', {
-      product: products[0],
-      pageTitle: products[0].title,
+      product: product,
+      pageTitle: product.title,
       path: '/products'
-
     })
   })
 
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then(products => {
       res.render('shop/index', {
         prods: products,
