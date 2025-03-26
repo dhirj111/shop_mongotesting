@@ -26,6 +26,7 @@ app.use((req, res, next) => {
   User.findById('67e2b2ef54db47d5ede8dc29')
     .then(user => {
       req.user = user;
+      console.log("in app.js req.user contains =" ,user)
       next();
     })
     .catch(err => {
@@ -73,7 +74,7 @@ mongoose
         user.save();
       }
     });
-    app.listen(3000);
+    app.listen(1000);
   })
   .catch(err => {
     console.log(err);
